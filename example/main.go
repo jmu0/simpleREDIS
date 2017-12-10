@@ -36,6 +36,15 @@ func main() {
 		if n == 0 {
 			printErr(errors.New("Deleted nothing"))
 		}
+	case "scan":
+		var keys []string
+		keys, err = r.Scan(args[1])
+		if err != nil {
+			printErr(err)
+		}
+		for i, key := range keys {
+			fmt.Println(i, key)
+		}
 	default:
 		help()
 	}

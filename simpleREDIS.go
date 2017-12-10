@@ -43,3 +43,21 @@ func (r *Redis) Get(key string) (string, error) {
 func (r *Redis) Del(key string) (int64, error) {
 	return r.client.Del(key).Result()
 }
+
+//Scan returns all keys
+func (r *Redis) Scan(match string) ([]string, error) {
+	var ret, keys []string
+	var err error
+	var cursor uint64
+	for {
+		keys, cursor, err = r.client.Scan(cursor, match, 10).Result()
+		if err != nil {
+			return ret, err
+		}
+		ret = append(ret, keys...)
+		if cursor == 0 {
+			break
+		}
+	}
+	return ret, nil
+}
