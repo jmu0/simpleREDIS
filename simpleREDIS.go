@@ -61,3 +61,22 @@ func (r *Redis) Scan(match string) ([]string, error) {
 	}
 	return ret, nil
 }
+
+//Rpush adds to list
+func (r *Redis) Rpush(key, value string) int64 {
+	return r.client.RPush(key, value).Val()
+}
+
+//GetList returns all items in list
+func (r *Redis) GetList(key string) ([]string, error) {
+	res := r.client.LRange(key, 0, -1)
+	if res.Err() != nil {
+		return make([]string, 0), res.Err()
+	}
+	return res.Val(), nil
+}
+
+//GetType gets type for keys
+func (r *Redis) GetType(key string) string {
+	return r.client.Type(key).Val()
+}
