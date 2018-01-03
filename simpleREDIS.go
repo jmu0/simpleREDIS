@@ -69,7 +69,12 @@ func (r *Redis) Rpush(key, value string) int64 {
 
 //GetList returns all items in list
 func (r *Redis) GetList(key string) ([]string, error) {
-	res := r.client.LRange(key, 0, -1)
+	return r.GetRange(key, 0, -1)
+}
+
+//GetRange returns all items in list
+func (r *Redis) GetRange(key string, from, to int64) ([]string, error) {
+	res := r.client.LRange(key, from, to)
 	if res.Err() != nil {
 		return make([]string, 0), res.Err()
 	}
