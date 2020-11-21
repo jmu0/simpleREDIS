@@ -1,6 +1,8 @@
 package simpleREDIS
 
 import (
+	"context"
+
 	"github.com/go-redis/redis"
 )
 
@@ -25,23 +27,23 @@ func (r *Redis) connect() error {
 		Password: "",
 		DB:       0,
 	})
-	_, err := r.client.Ping().Result()
+	_, err := r.client.Ping(context.TODO()).Result()
 	return err
 }
 
 //Set sets key/value
 func (r *Redis) Set(key, value string) error {
-	return r.client.Set(key, value, 0).Err()
+	return r.client.Set(context.TODO(), key, value, 0).Err()
 }
 
 //Get gets value of key
 func (r *Redis) Get(key string) (string, error) {
-	return r.client.Get(key).Result()
+	return r.client.Get(context.TODO(), key).Result()
 }
 
 //Del deletes key
 func (r *Redis) Del(key string) (int64, error) {
-	return r.client.Del(key).Result()
+	return r.client.Del(context.TODO(), key).Result()
 }
 
 //Scan returns all keys
@@ -50,7 +52,7 @@ func (r *Redis) Scan(match string) ([]string, error) {
 	var err error
 	var cursor uint64
 	for {
-		keys, cursor, err = r.client.Scan(cursor, match, 10).Result()
+		keys, cursor, err = r.client.Scan(context.TODO(), cursor, match, 10).Result()
 		if err != nil {
 			return ret, err
 		}
@@ -64,7 +66,7 @@ func (r *Redis) Scan(match string) ([]string, error) {
 
 //Rpush adds to list
 func (r *Redis) Rpush(key, value string) int64 {
-	return r.client.RPush(key, value).Val()
+	return r.client.RPush(context.TODO(), key, value).Val()
 }
 
 //GetList returns all items in list
@@ -74,7 +76,7 @@ func (r *Redis) GetList(key string) ([]string, error) {
 
 //GetRange returns all items in list
 func (r *Redis) GetRange(key string, from, to int64) ([]string, error) {
-	res := r.client.LRange(key, from, to)
+	res := r.client.LRange(context.TODO(), key, from, to)
 	if res.Err() != nil {
 		return make([]string, 0), res.Err()
 	}
@@ -83,5 +85,5 @@ func (r *Redis) GetRange(key string, from, to int64) ([]string, error) {
 
 //GetType gets type for keys
 func (r *Redis) GetType(key string) string {
-	return r.client.Type(key).Val()
+	return r.client.Type(context.TODO(), key).Val()
 }
